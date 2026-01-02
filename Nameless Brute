@@ -17271,7 +17271,7 @@ cmd.add({"PartsFE"},{"PartsFE","Break Parts"},function()
 	loadstring(game:HttpGet("https://pastefy.app/7J4mm46B/raw"))()
 end)
 
-cmd.add({"ARR"},{"AutoRespawn","Auto Respawn Panel"},function()
+cmd.add({"ARR"},{"ARR","Auto Respawn Panel"},function()
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/sadfgsdafgsd32-oss/RBLX/refs/heads/main/AutoRespawn"))()
 end)
 
