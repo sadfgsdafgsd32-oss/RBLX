@@ -17295,6 +17295,10 @@ cmd.add({"RoChips"},{"RoChips","RoChips Panel"},function()
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/sadfgsdafgsd32-oss/RBLX/refs/heads/main/RoChips"))()
 end)
 
+cmd.add({"BangFE"},{"FE Bang","FE Bang loop"},function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/sadfgsdafgsd32-oss/RBLX/refs/heads/main/BangFE"))()
+end)
+
 cmd.add({"lastcommand","lastcmd"},{"lastcommand (lastcmd)","Re-run your previously executed command"},function()
 	local last=NAStuff._lastCommand
 	local first = last and last[1]
