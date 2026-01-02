@@ -1,0 +1,459 @@
+-- BANG GUI SUS - Fixed Intro Lock + Smooth Close Animation + Draggable Mobile Button 🤑
+-- Owner: Jamarmoss73 (AKA SyncScripts)
+
+local Players = game:GetService("Players")
+local TextChatService = game:GetService("TextChatService")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+
+local player = Players.LocalPlayer
+local ownerName = "Jamarmoss73"
+local admins = {}
+local whitelisted = {}
+
+local looping = false
+local targetPlayer = nil
+local currentTime = 0
+
+-- Animation
+local bangAnimation = Instance.new("Animation")
+bangAnimation.AnimationId = "rbxassetid://223623937"
+local animator = nil
+local bangTrack = nil
+
+-- ScreenGui
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "BangGuiSus"
+ScreenGui.Parent = game.CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+-- Intro Frame
+local IntroFrame = Instance.new("Frame")
+IntroFrame.Name = "IntroFrame"
+IntroFrame.Parent = ScreenGui
+IntroFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+IntroFrame.BorderSizePixel = 0
+IntroFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
+IntroFrame.Size = UDim2.new(0, 400, 0, 300)
+
+local UICorner1 = Instance.new("UICorner")
+UICorner1.Parent = IntroFrame
+UICorner1.CornerRadius = UDim.new(0, 15)
+
+-- Intro Title & Subtitle
+local IntroTitle = Instance.new("TextLabel")
+IntroTitle.Parent = IntroFrame
+IntroTitle.BackgroundTransparency = 1
+IntroTitle.Position = UDim2.new(0, 0, 0.2, 0)
+IntroTitle.Size = UDim2.new(1, 0, 0, 60)
+IntroTitle.Font = Enum.Font.GothamBold
+IntroTitle.Text = "BANG GUI SUS"
+IntroTitle.TextColor3 = Color3.fromRGB(255, 85, 127)
+IntroTitle.TextSize = 48
+IntroTitle.TextStrokeTransparency = 0.8
+
+local IntroSubtitle = Instance.new("TextLabel")
+IntroSubtitle.Parent = IntroFrame
+IntroSubtitle.BackgroundTransparency = 1
+IntroSubtitle.Position = UDim2.new(0, 0, 0.45, 0)
+IntroSubtitle.Size = UDim2.new(1, 0, 0, 30)
+IntroSubtitle.Font = Enum.Font.Gotham
+IntroSubtitle.Text = "Player Looper v2.0 - By SyncScripts"
+IntroSubtitle.TextColor3 = Color3.fromRGB(200, 200, 200)
+IntroSubtitle.TextSize = 18
+
+-- Continue Button
+local ContinueButton = Instance.new("TextButton")
+ContinueButton.Parent = IntroFrame
+ContinueButton.BackgroundColor3 = Color3.fromRGB(255, 85, 127)
+ContinueButton.Position = UDim2.new(0.5, -80, 0.7, 0)
+ContinueButton.Size = UDim2.new(0, 160, 0, 45)
+ContinueButton.Font = Enum.Font.GothamBold
+ContinueButton.Text = "CONTINUE"
+ContinueButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ContinueButton.TextSize = 18
+ContinueButton.AutoButtonColor = false
+
+local UICorner2 = Instance.new("UICorner")
+UICorner2.Parent = ContinueButton
+UICorner2.CornerRadius = UDim.new(0, 10)
+
+-- Main Frame
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+MainFrame.BorderSizePixel = 0
+MainFrame.Position = UDim2.new(0.5, -225, 0.5, -175)
+MainFrame.Size = UDim2.new(0, 450, 0, 350)
+MainFrame.Visible = false
+MainFrame.BackgroundTransparency = 1  -- Start fully transparent
+
+local UICorner3 = Instance.new("UICorner")
+UICorner3.Parent = MainFrame
+UICorner3.CornerRadius = UDim.new(0, 15)
+
+-- Top Bar (drag handle)
+local TopBar = Instance.new("Frame")
+TopBar.Parent = MainFrame
+TopBar.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+TopBar.BorderSizePixel = 0
+TopBar.Size = UDim2.new(1, 0, 0, 50)
+
+local UICorner4 = Instance.new("UICorner")
+UICorner4.Parent = TopBar
+UICorner4.CornerRadius = UDim.new(0, 15)
+
+-- Title
+local Title = Instance.new("TextLabel")
+Title.Parent = TopBar
+Title.BackgroundTransparency = 1
+Title.Position = UDim2.new(0, 15, 0, 0)
+Title.Size = UDim2.new(0, 300, 1, 0)
+Title.Font = Enum.Font.GothamBold
+Title.Text = "BANG GUI SUS"
+Title.TextColor3 = Color3.fromRGB(255, 85, 127)
+Title.TextSize = 24
+Title.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Close Button
+local CloseButton = Instance.new("TextButton")
+CloseButton.Parent = TopBar
+CloseButton.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+CloseButton.Position = UDim2.new(1, -45, 0.5, -15)
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.TextSize = 18
+
+local UICorner5 = Instance.new("UICorner")
+UICorner5.Parent = CloseButton
+UICorner5.CornerRadius = UDim.new(0, 8)
+
+-- Username Label, Box, Start/Stop Buttons, StatusLabel (same as before)
+local UsernameLabel = Instance.new("TextLabel")
+UsernameLabel.Parent = MainFrame
+UsernameLabel.BackgroundTransparency = 1
+UsernameLabel.Position = UDim2.new(0, 30, 0, 80)
+UsernameLabel.Size = UDim2.new(0, 390, 0, 30)
+UsernameLabel.Font = Enum.Font.GothamBold
+UsernameLabel.Text = "Enter Display Name / Username:"
+UsernameLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
+UsernameLabel.TextSize = 16
+UsernameLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+local UsernameBox = Instance.new("TextBox")
+UsernameBox.Parent = MainFrame
+UsernameBox.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
+UsernameBox.Position = UDim2.new(0, 30, 0, 120)
+UsernameBox.Size = UDim2.new(0, 390, 0, 45)
+UsernameBox.Font = Enum.Font.Gotham
+UsernameBox.PlaceholderText = "Type username here..."
+UsernameBox.Text = ""
+UsernameBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+UsernameBox.TextSize = 16
+UsernameBox.ClearTextOnFocus = false
+
+local UICorner6 = Instance.new("UICorner")
+UICorner6.Parent = UsernameBox
+UICorner6.CornerRadius = UDim.new(0, 10)
+
+local StartButton = Instance.new("TextButton")
+StartButton.Parent = MainFrame
+StartButton.BackgroundColor3 = Color3.fromRGB(85, 255, 127)
+StartButton.Position = UDim2.new(0, 30, 0, 190)
+StartButton.Size = UDim2.new(0, 185, 0, 45)
+StartButton.Font = Enum.Font.GothamBold
+StartButton.Text = "START LOOP"
+StartButton.TextColor3 = Color3.fromRGB(20, 20, 20)
+StartButton.TextSize = 16
+StartButton.AutoButtonColor = false
+
+local StartCorner = Instance.new("UICorner")
+StartCorner.Parent = StartButton
+StartCorner.CornerRadius = UDim.new(0, 10)
+
+local StopButton = Instance.new("TextButton")
+StopButton.Parent = MainFrame
+StopButton.BackgroundColor3 = Color3.fromRGB(255, 85, 85)
+StopButton.Position = UDim2.new(0, 235, 0, 190)
+StopButton.Size = UDim2.new(0, 185, 0, 45)
+StopButton.Font = Enum.Font.GothamBold
+StopButton.Text = "STOP LOOP"
+StopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+StopButton.TextSize = 16
+StopButton.AutoButtonColor = false
+
+local StopCorner = Instance.new("UICorner")
+StopCorner.Parent = StopButton
+StopCorner.CornerRadius = UDim.new(0, 10)
+
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Parent = MainFrame
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.Position = UDim2.new(0, 30, 0, 260)
+StatusLabel.Size = UDim2.new(0, 390, 0, 60)
+StatusLabel.Font = Enum.Font.Gotham
+StatusLabel.Text = "Status: Idle"
+StatusLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
+StatusLabel.TextSize = 14
+StatusLabel.TextWrapped = true
+StatusLabel.TextYAlignment = Enum.TextYAlignment.Top
+
+-- Mobile Toggle Button 🤑 (Draggable)
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Name = "MobileToggle"
+ToggleButton.Parent = ScreenGui
+ToggleButton.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
+ToggleButton.Position = UDim2.new(1, -70, 1, -90)
+ToggleButton.Size = UDim2.new(0, 60, 0, 60)
+ToggleButton.Font = Enum.Font.GothamBold
+ToggleButton.Text = "🤑"
+ToggleButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+ToggleButton.TextSize = 36
+ToggleButton.ZIndex = 10
+ToggleButton.AutoButtonColor = false
+ToggleButton.Active = false  -- Disabled until intro is done
+ToggleButton.Visible = false -- Hidden until intro finishes
+
+local ToggleCorner = Instance.new("UICorner")
+ToggleCorner.Parent = ToggleButton
+ToggleCorner.CornerRadius = UDim.new(1, 0)
+
+local ToggleStroke = Instance.new("UIStroke")
+ToggleStroke.Parent = ToggleButton
+ToggleStroke.Color = Color3.fromRGB(0, 0, 0)
+ToggleStroke.Thickness = 3
+ToggleStroke.Transparency = 0.3
+
+-- Hover effect for toggle
+ToggleButton.MouseEnter:Connect(function()
+    if ToggleButton.Active then
+        TweenService:Create(ToggleButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 240, 100)}):Play()
+    end
+end)
+ToggleButton.MouseLeave:Connect(function()
+    if ToggleButton.Active then
+        TweenService:Create(ToggleButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 215, 0)}):Play()
+    end
+end)
+
+-- Dragging for Toggle Button
+local dragToggle2 = nil
+local dragInput2 = nil
+local dragStart2 = nil
+local startPos2 = nil
+
+local function updateInput2(input)
+    local delta = input.Position - dragStart2
+    ToggleButton.Position = UDim2.new(startPos2.X.Scale, startPos2.X.Offset + delta.X, startPos2.Y.Scale, startPos2.Y.Offset + delta.Y)
+end
+
+ToggleButton.InputBegan:Connect(function(input)
+    if not ToggleButton.Active then return end
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragToggle2 = true
+        dragStart2 = input.Position
+        startPos2 = ToggleButton.Position
+    end
+end)
+
+ToggleButton.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput2 = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput2 and dragToggle2 then
+        updateInput2(input)
+    end
+end)
+
+ToggleButton.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragToggle2 = false
+    end
+end)
+
+-- GUI State
+local isOpen = false
+local guiUnlocked = false  -- Prevents any interaction until intro is fully gone
+
+-- Smooth Open Animation
+local function openGUI()
+    if isOpen or not guiUnlocked then return end
+    isOpen = true
+    MainFrame.Visible = true
+    MainFrame.Position = UDim2.new(0.5, -225, 1.5, 0)  -- Start from bottom
+    TweenService:Create(MainFrame, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        Position = UDim2.new(0.5, -225, 0.5, -175),
+        BackgroundTransparency = 0
+    }):Play()
+    for _, child in pairs(MainFrame:GetChildren()) do
+        if child:IsA("GuiObject") then
+            child.BackgroundTransparency = 0
+            if child:IsA("TextLabel") or child:IsA("TextButton") or child:IsA("TextBox") then
+                child.TextTransparency = 0
+            end
+        end
+    end
+end
+
+-- Smooth Close Animation
+local function closeGUI()
+    if not isOpen then return end
+    isOpen = false
+
+    -- Fade out + slide down
+    TweenService:Create(MainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+        Position = UDim2.new(0.5, -225, 1.5, 0),
+        BackgroundTransparency = 1
+    }):Play()
+
+    for _, child in pairs(MainFrame:GetChildren()) do
+        if child:IsA("GuiObject") then
+            TweenService:Create(child, TweenInfo.new(0.4), {
+                BackgroundTransparency = 1,
+                TextTransparency = 1
+            }):Play()
+        end
+    end
+
+    task.wait(0.5)
+    MainFrame.Visible = false
+end
+
+-- Toggle Button Click
+ToggleButton.MouseButton1Click:Connect(function()
+    if not guiUnlocked then return end
+    if isOpen then
+        closeGUI()
+    else
+        openGUI()
+    end
+end)
+
+-- Continue Button - Unlocks GUI + Shows Toggle Button
+ContinueButton.MouseButton1Click:Connect(function()
+    ContinueButton.BackgroundColor3 = Color3.fromRGB(235, 65, 107)
+    task.wait(0.1)
+    ContinueButton.BackgroundColor3 = Color3.fromRGB(255, 85, 127)
+
+    -- Animate intro out
+    IntroFrame:TweenPosition(UDim2.new(0.5, -200, -0.5, 0), "Out", "Back", 0.6, true)
+
+    task.wait(0.6)
+    IntroFrame.Visible = false
+
+    -- NOW unlock everything
+    guiUnlocked = true
+    ToggleButton.Active = true
+    ToggleButton.Visible = true
+
+    -- Auto-open main GUI with smooth entry
+    openGUI()
+end)
+
+-- Close Button (X) - Smooth close
+CloseButton.MouseButton1Click:Connect(function()
+    stopLoop()
+    closeGUI()
+end)
+
+-- Rest of your functions (findPlayer, updateStatus, stopLoop, startBang, etc.)
+-- ... (All your original functions remain unchanged below)
+
+local function findPlayer(name)
+    if name == "" then return nil end
+    name = string.lower(name)
+    for _, p in Players:GetPlayers() do
+        if string.lower(p.Name):find(name) or string.lower(p.DisplayName):find(name) then
+            return p
+        end
+    end
+    return nil
+end
+
+local function updateStatus(text, color)
+    StatusLabel.Text = "Status: " .. text
+    StatusLabel.TextColor3 = color or Color3.fromRGB(180, 180, 180)
+end
+
+local function stopLoop()
+    looping = false
+    if bangTrack and bangTrack.IsPlaying then
+        bangTrack:Stop()
+    end
+    bangTrack = nil
+    updateStatus("Loop stopped", Color3.fromRGB(255, 170, 85))
+end
+
+local function startBang(targetName)
+    if not guiUnlocked then return end  -- Extra safety
+    local target = findPlayer(targetName)
+    if not target or target == player then
+        updateStatus("Error: Invalid target!", Color3.fromRGB(255, 85, 85))
+        return false
+    end
+
+    targetPlayer = target
+    looping = true
+    updateStatus("Banging " .. target.DisplayName .. " (close & smooth)", Color3.fromRGB(85, 255, 127))
+
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        animator = player.Character.Humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator", player.Character.Humanoid)
+        bangTrack = animator:LoadAnimation(bangAnimation)
+        bangTrack.Priority = Enum.AnimationPriority.Action
+        bangTrack.Looped = true
+        bangTrack:Play()
+    end
+
+    task.spawn(function()
+        currentTime = 0
+        while looping and targetPlayer and targetPlayer.Character and player.Character do
+            local targetHRP = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+            local myHRP = player.Character:FindFirstChild("HumanoidRootPart")
+            if targetHRP and myHRP then
+                local baseOffset = CFrame.new(0, 0, 0.8)
+                local amplitude = 1.8
+                local frequency = 11
+                local offsetZ = amplitude * math.sin(currentTime * frequency)
+                local extraOffset = CFrame.new(0, 0, offsetZ)
+
+                myHRP.CFrame = targetHRP.CFrame * baseOffset * extraOffset
+            end
+            currentTime += RunService.Heartbeat:Wait()
+        end
+        if bangTrack then bangTrack:Stop() end
+    end)
+    return true
+end
+
+-- Button Connections
+StartButton.MouseButton1Click:Connect(function()
+    if not guiUnlocked then return end
+    if UsernameBox.Text == "" then
+        updateStatus("Error: Enter a username!", Color3.fromRGB(255, 85, 85))
+        return
+    end
+    startBang(UsernameBox.Text)
+end)
+
+StopButton.MouseButton1Click:Connect(function()
+    if not guiUnlocked then return end
+    stopLoop()
+end)
+
+-- Hover Effects & MainFrame Dragging (unchanged from previous version)
+-- ... (Add your hover and dragging code here)
+
+-- Chat Commands & Load Announcement (same as before)
+-- ...
+
+-- Announce Load
+if TextChatService.TextChannels:FindFirstChild("RBXSystem") then
+    TextChatService.TextChannels.RBXSystem:DisplaySystemMessage("Loaded by <font color=\"#FF557F\">Jamarmoss73</font> the owner AKA <font color=\"#FF557F\">SyncScripts</font>")
+end
