@@ -17259,6 +17259,42 @@ cmd.add({"executor","exec"},{"executor (exec)","Very simple executor"},function(
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/ltseverydayyou/Nameless-Admin/main/NAexecutor.lua"))()
 end)
 
+cmd.add({"Clone"},{"Clone","Create IIlusion"},function()
+	loadstring(game:HttpGet("https://scriptblox.com/raw/Universal-Script-FE-Illusion-Script-12744"))()
+end)
+
+cmd.add({"Tfling"},{"Tfling","Touch Fling"},function()
+	loadstring(game:HttpGet(('https://raw.githubusercontent.com/0Ben1/fe/main/obf_rf6iQURzu1fqrytcnLBAvW34C9N55kS9g9G3CKz086rC47M6632sEd4ZZYB0AYgV.lua.txt'),true))()
+end)
+
+cmd.add({"PartsFE"},{"PartsFE","Break Parts"},function()
+	loadstring(game:HttpGet("https://pastefy.app/7J4mm46B/raw"))()
+end)
+
+cmd.add({"ARR"},{"AutoRespawn","Auto Respawn Panel"},function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/sadfgsdafgsd32-oss/RBLX/refs/heads/main/AutoRespawn"))()
+end)
+
+cmd.add({"Clone"},{"Clone","Create IIlusion"},function()
+	loadstring(game:HttpGet("https://scriptblox.com/raw/Universal-Script-FE-Illusion-Script-12744"))()
+end)
+
+cmd.add({"PrizzLife"},{"PrizzLife","PrizzLife Panel"},function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/sadfgsdafgsd32-oss/RBLX/refs/heads/main/PL%200.8.2"))()
+end)
+
+cmd.add({"HookSync"},{"HookSync","HookSync Panel"},function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/sadfgsdafgsd32-oss/RBLX/refs/heads/main/HookSync"))()
+end)
+
+cmd.add({"Invisibility"},{"Invisibility","Invis Panel"},function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/zenss555a/script/refs/heads/main/Prison-Life.lua", true))()
+end)
+
+cmd.add({"RoChips"},{"RoChips","RoChips Panel"},function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/sadfgsdafgsd32-oss/RBLX/refs/heads/main/RoChips"))()
+end)
+
 cmd.add({"lastcommand","lastcmd"},{"lastcommand (lastcmd)","Re-run your previously executed command"},function()
 	local last=NAStuff._lastCommand
 	local first = last and last[1]
@@ -25619,18 +25655,6 @@ cmd.add({"autorejoin", "autorj"}, {"autorejoin (autorj)", "Rejoins the server if
 			TeleportService:TeleportToPlaceInstance(PlaceId, JobId, Players.LocalPlayer)
 		end
 	end
-
-cmd.add({"Clone","clone"}, {"Clone", "Clone"}, function()
-	
-loadstring(game:HttpGet("https://scriptblox.com/raw/Universal-Script-FE-Illusion-Script-12744"))()
-
-	end
-
-
-
-
-
-
 
 	local guiService = SafeGetService("GuiService")
 	NAlib.connect("autorejoin", guiService.ErrorMessageChanged:Connect(handleRejoin))
